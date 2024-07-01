@@ -41,7 +41,7 @@
             this.Show_AppName_TextBox = new System.Windows.Forms.TextBox();
             this.HelpLabel1 = new System.Windows.Forms.Label();
             this.ClickTo_InstallSelectedApp_Button = new System.Windows.Forms.Button();
-            this.CheckedToSign_CheckBox = new System.Windows.Forms.CheckBox();
+            this.CheckedToSignApp_CheckBox = new System.Windows.Forms.CheckBox();
             this.WebAppStoreLinkLabel = new System.Windows.Forms.LinkLabel();
             this.SelectSaveDirDlg = new System.Windows.Forms.FolderBrowserDialog();
             this.AppInfos_FunsGroupBox.SuspendLayout();
@@ -164,17 +164,18 @@
             this.ClickTo_InstallSelectedApp_Button.TabIndex = 2;
             this.ClickTo_InstallSelectedApp_Button.Text = "安装";
             this.ClickTo_InstallSelectedApp_Button.UseVisualStyleBackColor = true;
+            this.ClickTo_InstallSelectedApp_Button.Click += new System.EventHandler(this.ClickTo_InstallSelectedApp_Button_Click);
             // 
-            // CheckedToSign_CheckBox
+            // CheckedToSignApp_CheckBox
             // 
-            this.CheckedToSign_CheckBox.AutoSize = true;
-            this.CheckedToSign_CheckBox.Location = new System.Drawing.Point(283, 323);
-            this.CheckedToSign_CheckBox.Margin = new System.Windows.Forms.Padding(2);
-            this.CheckedToSign_CheckBox.Name = "CheckedToSign_CheckBox";
-            this.CheckedToSign_CheckBox.Size = new System.Drawing.Size(96, 21);
-            this.CheckedToSign_CheckBox.TabIndex = 6;
-            this.CheckedToSign_CheckBox.Text = "签上TestKey";
-            this.CheckedToSign_CheckBox.UseVisualStyleBackColor = true;
+            this.CheckedToSignApp_CheckBox.AutoSize = true;
+            this.CheckedToSignApp_CheckBox.Location = new System.Drawing.Point(283, 323);
+            this.CheckedToSignApp_CheckBox.Margin = new System.Windows.Forms.Padding(2);
+            this.CheckedToSignApp_CheckBox.Name = "CheckedToSignApp_CheckBox";
+            this.CheckedToSignApp_CheckBox.Size = new System.Drawing.Size(96, 21);
+            this.CheckedToSignApp_CheckBox.TabIndex = 6;
+            this.CheckedToSignApp_CheckBox.Text = "签上TestKey";
+            this.CheckedToSignApp_CheckBox.UseVisualStyleBackColor = true;
             // 
             // WebAppStoreLinkLabel
             // 
@@ -193,7 +194,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(394, 356);
             this.Controls.Add(this.WebAppStoreLinkLabel);
-            this.Controls.Add(this.CheckedToSign_CheckBox);
+            this.Controls.Add(this.CheckedToSignApp_CheckBox);
             this.Controls.Add(this.AppInfos_FunsGroupBox);
             this.Controls.Add(this.Show_AppList_ListBox);
             this.Controls.Add(this.ClickTo_InstallSelectedApp_Button);
@@ -227,7 +228,7 @@
         private System.Windows.Forms.TextBox Show_AppDescription_TextBox;
         private System.Windows.Forms.Button ClickTo_InstallSelectedApp_Button;
         private System.Windows.Forms.Button ClickTo_SaveApk_Button;
-        private System.Windows.Forms.CheckBox CheckedToSign_CheckBox;
+        private System.Windows.Forms.CheckBox CheckedToSignApp_CheckBox;
         private System.Windows.Forms.PictureBox ShowIconBox;
         private System.Windows.Forms.Label HelpLabel5;
         private System.Windows.Forms.LinkLabel WebAppStoreLinkLabel;

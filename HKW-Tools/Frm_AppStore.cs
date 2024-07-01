@@ -15,7 +15,7 @@ namespace HKW_Tools
 {
     public partial class Frm_AppStore : Form
     {
-        readonly string deviceID;
+        readonly string selectedDevice;
 
         APPStore.AppList appList;
         readonly Bitmap errorImage = new Bitmap(64, 64);
@@ -24,7 +24,7 @@ namespace HKW_Tools
         public Frm_AppStore(string deviceID)
         {
             InitializeComponent();
-            this.deviceID = deviceID;
+            selectedDevice = deviceID;
             appList = APPStore.AppList.Get_APPInFos(Link.GetUrlJsonData("https://gitee.com/j-donkey/HKW-AppStore/raw/master/app-list.json"));
         }
 
@@ -151,10 +151,10 @@ namespace HKW_Tools
 
         private void Frm_AppStore_Load(object sender, EventArgs e)
         {
-            if (deviceID == null)
+            if (selectedDevice == null)
             {
                 ClickTo_InstallSelectedApp_Button.Enabled = false;
-                CheckedToSign_CheckBox.Enabled = false;
+                CheckedToSignApp_CheckBox.Enabled = false;
             }
             Show_AppList_ListBox.Items.Clear();
             foreach (var app in appList.Applist)
@@ -193,7 +193,7 @@ namespace HKW_Tools
                         string aPKPath = Link.DownLoadFile(downloadLink, SelectSaveDirDlg.SelectedPath, downlaodFilename);
                         if (aPKPath != null)
                         {
-                            MessageBox.Show($"下载成功!\n已经将文件保存到\"{aPKPath}\"", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show($"下载完成!\n已经将文件保存到\"{aPKPath}\"", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             return;
                         }
                     }
@@ -202,6 +202,36 @@ namespace HKW_Tools
             catch (Exception ex)
             {
                 MessageBox.Show($"未知错误: {ex.Message}", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
+
+        private void ClickTo_InstallSelectedApp_Button_Click(object sender, EventArgs e)
+        {
+            string selectedAppName = Show_AppList_ListBox.SelectedItem.ToString();
+            if (selectedAppName != null)
+            {
+                if (ADB.Devices.Exists(selectedDevice))
+                {
+                    int selectedAppIndex = Show_AppList_ListBox.SelectedIndex;
+                    string savePath = Link.DownLoadFile(appList.Applist[selectedAppIndex].Url, Path.GetDirectoryName(Download_apk), Path.GetFileName(Download_apk));
+                    if (savePath != null)
+                    {
+                        if (CheckedToSignApp_CheckBox.Checked)
+                        {
+                            ADB.APP.SignInstall(selectedDevice, savePath);
+                        }
+                        else
+                        {
+                            ADB.APP.Install(selectedDevice, savePath);
+                        }
+
+                        if (File.Exists(Download_apk))
+                        {
+                            File.Delete(Download_apk);
+                        }
+                    }
+                }
             }
             
         }

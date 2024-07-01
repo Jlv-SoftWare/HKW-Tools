@@ -50,7 +50,6 @@ F:\source\HKW-Tools\HKW-Tools\bin\Debug\Tools\testkey.pk8
 F:\source\HKW-Tools\HKW-Tools\bin\Debug\Tools\testkey.x509.pem
 F:\source\HKW-Tools\HKW-Tools\bin\Debug\ADB\SDL2.dll
 F:\source\HKW-Tools\HKW-Tools\bin\Debug\ADB\sqlite3.exe
-F:\source\HKW-Tools\HKW-Tools\bin\Debug\Local\app-list.json
 F:\source\HKW-Tools\HKW-Tools\bin\Debug\HKW-Tools.exe.config
 F:\source\HKW-Tools\HKW-Tools\bin\Debug\HKW-Tools.exe
 F:\source\HKW-Tools\HKW-Tools\bin\Debug\HKW-Tools.pdb

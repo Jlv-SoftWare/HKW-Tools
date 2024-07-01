@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using ToolsNT_API;
+using static ToolsNT_API.ToolsItems;
 using ToolsNT_API.WebTools;
 
 namespace HKW_Tools
@@ -90,6 +92,10 @@ namespace HKW_Tools
 
         public void MainFrm_Load(object sender, EventArgs e)
         {
+            if (!Directory.Exists(Path.GetDirectoryName(Download_apk)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Download_apk));
+            }
             if (ShowDevices_ComboBox.Items.Count == 0)
             {
                 ShowDevices_ComboBox.Items.Clear();

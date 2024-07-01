@@ -35,7 +35,7 @@ namespace ToolsNT_API
         aligned_Apk = Path.Combine(align_Dir, "Align.apk"),
         signed_Apk = Path.Combine(sign_Dir, "Signed.apk"),
         scrcpy_exe = Path.Combine(InstallPath, "ADB", "scrcpy.exe"),
-        app_list_json = Path.Combine(InstallPath, "Local", "app-list.json");
+        Download_apk = Path.Combine(InstallPath, "Downloads", "Download.apk");
 
     }
 
@@ -190,7 +190,7 @@ namespace ToolsNT_API
                         {
                             continue;
                         }
-                        string deviceName = line.Substring(0, line.LastIndexOf("\tdevice") - 1);
+                        string deviceName = line.Substring(0, line.LastIndexOf("\tdevice"));
                         devices.Add(deviceName.Trim());
                     }
 
@@ -877,7 +877,6 @@ namespace ToolsNT_API
                     }
                 }
             }
-
             public static string DownLoadFile(string fileUrl, string saveDir, string saveFileName)
             {
                 string result = null;
@@ -886,8 +885,7 @@ namespace ToolsNT_API
                     result = await DownloadFileAsync(fileUrl, saveDir, saveFileName);
                 }).Wait();
                 return result;
-            }
-
+            } 
             static async Task<string> GetJsonDataAsync(string url)
             {
                 using (HttpClient client = new HttpClient())
