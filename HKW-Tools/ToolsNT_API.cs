@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static ToolsNT_API.ToolsItems;
 using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace ToolsNT_API
 {
@@ -183,13 +184,13 @@ namespace ToolsNT_API
                 {
                     List<string> devices = new List<string>();
 
-                    for (int i = 1; i < lines.Length; i++)
+                    foreach (string line in lines)
                     {
-                        string line = lines[i].Trim();
-                        if (!line.EndsWith("\tdevice"))
+                        if (line.EndsWith("\toffline") || line.StartsWith("List of"))
+                        {
                             continue;
-
-                        string deviceName = line.Substring(0, line.Length - "\tdevice".Length);
+                        }
+                        string deviceName = line.Substring(0, line.LastIndexOf("\tdevice") - 1);
                         devices.Add(deviceName.Trim());
                     }
 
@@ -887,6 +888,33 @@ namespace ToolsNT_API
                 return result;
             }
 
+            static async Task<string> GetJsonDataAsync(string url)
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    try
+                    {
+                        HttpResponseMessage response = await client.GetAsync(url);
+                        response.EnsureSuccessStatusCode();
+                        return await response.Content.ReadAsStringAsync();
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            public static string GetUrlJsonData(string url)
+            {
+                string result = null;
+                Task.Run(async () =>
+                {
+                    result = await GetJsonDataAsync(url);
+                }).Wait();
+                return result;
+            }
+
             static public string GetFileNameFromUrl(string url)
             {
                 return Path.GetFileName(url);
@@ -912,14 +940,10 @@ namespace ToolsNT_API
             {
                 public List<AppInfo> Applist { get; set; }
 
-                public static AppList Get_ED_APPInFos(string eDStore_APPList_Json_Path)
+                public static AppList Get_APPInFos(string jsonData)
                 {
-                    if (File.Exists(eDStore_APPList_Json_Path))
-                    {
-                        AppList appList = JsonConvert.DeserializeObject<AppList>(File.ReadAllText(eDStore_APPList_Json_Path));
-                        return appList;
-                    }
-                    return null;
+                    AppList appList = JsonConvert.DeserializeObject<AppList>(jsonData);
+                    return appList;
                 }
             }
 

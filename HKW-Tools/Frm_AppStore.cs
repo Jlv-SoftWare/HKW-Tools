@@ -18,13 +18,14 @@ namespace HKW_Tools
         readonly string deviceID;
 
         APPStore.AppList appList;
-        readonly Bitmap noneImage = new Bitmap(64, 64);
+        readonly Bitmap errorImage = new Bitmap(64, 64);
+        readonly Bitmap noneBitmap = DrawA_NonePicture();
 
         public Frm_AppStore(string deviceID)
         {
             InitializeComponent();
             this.deviceID = deviceID;
-            appList = APPStore.AppList.Get_ED_APPInFos(app_list_json);
+            appList = APPStore.AppList.Get_APPInFos(Link.GetUrlJsonData("https://gitee.com/j-donkey/HKW-AppStore/raw/master/app-list.json"));
         }
 
         string LegalSaveName(string name)
@@ -40,7 +41,30 @@ namespace HKW_Tools
                 .Replace("|", "_");
         }
 
+        static Bitmap DrawA_NonePicture()
+        {
+            Bitmap bmp = new Bitmap(64, 64);
 
+            // 使用 Graphics 从位图中获取画布
+            using (Graphics graphics = Graphics.FromImage(bmp))
+            {
+                // 设置画布背景色为白色
+                graphics.Clear(Color.Transparent);
+
+                // 设置绘制文本的字体和颜色
+                Font font = new Font("Microsoft YaHei UI", 24, FontStyle.Regular, GraphicsUnit.Pixel);
+                SolidBrush brush = new SolidBrush(Color.Black);
+
+                // 设置文本居中绘制
+                StringFormat format = new StringFormat();
+                format.Alignment = StringAlignment.Center;
+                format.LineAlignment = StringAlignment.Center;
+
+                // 绘制文本（汉字 "无"）
+                graphics.DrawString("无", font, brush, new RectangleF(0, 0, bmp.Width, bmp.Height), format);
+            }
+            return bmp;
+        }
         Image GetUrlPicture(string url)
         {
             try
@@ -72,7 +96,7 @@ namespace HKW_Tools
             return null;
         }
 
-        void ShowIconOn_IconBox(System.Drawing.Image icon)
+        void ShowIconOn_IconBox(Image icon)
         {
             if (icon != null)
             {
@@ -106,7 +130,7 @@ namespace HKW_Tools
             Show_AppName_TextBox.Text = "";
             Show_AppVer_TextBox.Text = "";
             Show_AppDescription_TextBox.Text = "";
-            ShowIconBox.Image = noneImage;
+            ShowIconBox.Image = errorImage;
         }
 
         void ShowOnTextBoxes(string name, string ver, string description, string iconUrl)
@@ -116,14 +140,12 @@ namespace HKW_Tools
             Show_AppDescription_TextBox.Text = description;
             if (iconUrl != null)
             {
-                ShowIconBox.Visible = true;
-                System.Drawing.Image icon = GetUrlPicture(iconUrl);
+                Image icon = GetUrlPicture(iconUrl);
                 ShowIconOn_IconBox(ImageTo64x64BitMap(icon));
             }
             else
             {
-                ShowIconBox.Image = noneImage;
-                ShowIconBox.Visible = false;
+                ShowIconBox.Image = noneBitmap;
             }
         }
 

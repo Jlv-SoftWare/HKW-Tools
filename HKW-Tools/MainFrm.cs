@@ -88,54 +88,6 @@ namespace HKW_Tools
             }
         }
 
-        /*void Show_Devices()
-        {
-            string[] DevicesListToCheck = ADB.Devices.List();
-
-            while (true)
-            {
-                try
-                {
-                    ShowDevices_ComboBox.DataSource = DevicesListToCheck;
-
-
-                    if (DevicesListToCheck[0] == "无")
-                    {
-                        ShowNumOfDevices_Label.Text = $"当前无设备连接";
-                    }
-                    else
-                    {
-                        ShowNumOfDevices_Label.Text = $"当前连接了 {DevicesListToCheck.Length} 个设备";
-                    }
-
-                    if (DevicesListToCheck != ADB.Devices.List())
-                    {
-                        DevicesListToCheck = ADB.Devices.List();
-                    }
-
-                    if (ADB.Devices.Exists(ShowDevices_ComboBox.SelectedItem.ToString()))
-                    {
-                        ShowDevices_ComboBox.SelectedIndex = Array.IndexOf(DevicesListToCheck, ShowDevices_ComboBox.SelectedItem.ToString());
-                    }
-                    else
-                    {
-                        ShowDevices_ComboBox.SelectedIndex = 0;
-                    }
-
-                    SelectedDeviceID = ShowDevices_ComboBox.SelectedItem.ToString();
-                }
-                catch
-                {
-                    Thread.Sleep(950);
-                    continue;
-                }
-                finally
-                {
-                    Thread.Sleep(950);
-                }
-            }
-        }*/
-
         public void MainFrm_Load(object sender, EventArgs e)
         {
             if (ShowDevices_ComboBox.Items.Count == 0)
