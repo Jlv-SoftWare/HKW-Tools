@@ -10,10 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using static ToolsNT_API.ToolsItems;
-using System.Net;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace ToolsNT_API
 {
@@ -21,22 +18,29 @@ namespace ToolsNT_API
     {
         public static string
         InstallPath = AppDomain.CurrentDomain.BaseDirectory,
-        adb_exe = Path.Combine(InstallPath, "ADB", "adb.exe"),
+        adb_exe_path = Path.Combine(InstallPath, "ADB", "adb.exe"),
+        adb_exe = $"\"{adb_exe_path}\"",
         AdbWinApi_dll = Path.Combine(InstallPath, "ADB", "AdbWinApi.dll"),
         AdbWinUsbApi_dll = Path.Combine(InstallPath, "ADB", "AdbWinUsbApi.dll"),
-        ToolsNT_exe = Path.Combine(InstallPath, "ToolsNT.exe"),
-        aapt_arm_pie = Path.Combine(InstallPath,"Tools", "aapt-arm-pie"),
-        testkey_pk8 = Path.Combine(InstallPath, "Tools", "testkey.pk8"),
-        testkey_x509_pem = Path.Combine(InstallPath, "Tools", "testkey.x509.pem"),
-        apksigner_jar = Path.Combine(InstallPath, "Tools", "apksigner.jar"),
-        zipalign_exe = Path.Combine(InstallPath, "Tools", "zipalign.exe"),
+        ToolsNT_exe_path = Path.Combine(InstallPath, "ToolsNT.exe"),
+        ToolsNT_exe = $"\"{ToolsNT_exe_path}\"",
+        aapt_arm_pie = Path.Combine(InstallPath, "Tools", "aapt-arm-pie"),
+        testkey_pk8_path = Path.Combine(InstallPath, "Tools", "testkey.pk8"),
+        testkey_pk8 = $"\"{testkey_pk8_path}\"",
+        testkey_x509_pem_path = Path.Combine(InstallPath, "Tools", "testkey.x509.pem"),
+        testkey_x509_pem = $"\"{testkey_x509_pem_path}\"",
+        apksigner_jar_path = Path.Combine(InstallPath, "Tools", "apksigner.jar"),
+        apksigner_jar = $"\"{apksigner_jar_path}\"",
+        zipalign_exe_path = Path.Combine(InstallPath, "Tools", "zipalign.exe"),
+        zipalign_exe = $"\"{zipalign_exe_path}\"",
         align_Dir = Path.Combine(InstallPath, "Align"),
         sign_Dir = Path.Combine(InstallPath, "Dist"),
         aligned_Apk = Path.Combine(align_Dir, "Align.apk"),
         signed_Apk = Path.Combine(sign_Dir, "Signed.apk"),
-        scrcpy_exe = Path.Combine(InstallPath, "ADB", "scrcpy.exe"),
+        scrcpy_exe_path = Path.Combine(InstallPath, "ADB", "scrcpy.exe"),
+        scrcpy_exe = $"\"{scrcpy_exe_path}\"",
         Download_apk = Path.Combine(InstallPath, "Downloads", "Download.apk");
-
+        public const string AppVersion = "1.1.9";
     }
 
     static class CommandHelper
@@ -468,8 +472,8 @@ namespace ToolsNT_API
 
                 string command_Align = $"{zipalign_exe} -v 4 {aPK_Path} {aligned_Apk}",
                        command_Sign = $"java -jar {apksigner_jar} sign " +
-                                      $"--key \"{testkey_pk8}\" " +
-                                      $"--cert \"{testkey_x509_pem}\" " +
+                                      $"--key {testkey_pk8} " +
+                                      $"--cert {testkey_x509_pem} " +
                                       $"--out \"{signed_Apk}\" \"{aligned_Apk}\"";
                 CommandHelper.Exec(command_Align, true);
                 if (!File.Exists(aligned_Apk))
@@ -780,7 +784,7 @@ namespace ToolsNT_API
 
         public static bool ExistsADBItems()
         {
-            if (!File.Exists(adb_exe) || !File.Exists(AdbWinApi_dll) || !File.Exists(AdbWinUsbApi_dll))
+            if (!File.Exists(adb_exe_path) || !File.Exists(AdbWinApi_dll) || !File.Exists(AdbWinUsbApi_dll))
             {
                 return false;
             }
@@ -789,7 +793,7 @@ namespace ToolsNT_API
 
         public static bool ExistsToolsNT()
         {
-            if (!File.Exists(ToolsNT_exe))
+            if (!File.Exists(ToolsNT_exe_path))
             {
                 return false;
             }
