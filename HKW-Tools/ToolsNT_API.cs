@@ -41,7 +41,7 @@ namespace ToolsNT_API
         scrcpy_exe_path = Path.Combine(InstallPath, "ADB", "scrcpy.exe"),
         scrcpy_exe = $"\"{scrcpy_exe_path}\"",
         Download_apk = Path.Combine(InstallPath, "Downloads", "Download.apk");
-        public const string AppVersion = "1.1.9";
+        public const string AppVersion = "1.2.0";
     }
 
     static class CommandHelper
