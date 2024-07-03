@@ -81,6 +81,7 @@
             this.EnableAPP_Button.TabIndex = 3;
             this.EnableAPP_Button.Text = "启用";
             this.EnableAPP_Button.UseVisualStyleBackColor = true;
+            this.EnableAPP_Button.Click += new System.EventHandler(this.EnableAPP_Button_Click);
             // 
             // DisableAPP_Button
             // 
@@ -90,6 +91,7 @@
             this.DisableAPP_Button.TabIndex = 4;
             this.DisableAPP_Button.Text = "禁用";
             this.DisableAPP_Button.UseVisualStyleBackColor = true;
+            this.DisableAPP_Button.Click += new System.EventHandler(this.DisableAPP_Button_Click);
             // 
             // RadioButton_GroupBox
             // 
@@ -164,7 +166,6 @@
             this.ClickToShowALL_APPS_RaidoButton.TabStop = true;
             this.ClickToShowALL_APPS_RaidoButton.Text = "所有的应用";
             this.ClickToShowALL_APPS_RaidoButton.UseVisualStyleBackColor = true;
-            this.ClickToShowALL_APPS_RaidoButton.CheckedChanged += new System.EventHandler(this.ClickToShowALL_APPS_RaidoButton_CheckedChanged);
             this.ClickToShowALL_APPS_RaidoButton.Click += new System.EventHandler(this.ClickToShowALL_APPS_RaidoButton_Click);
             // 
             // Frm_AppManage
@@ -186,7 +187,6 @@
             this.MinimizeBox = false;
             this.Name = "Frm_AppManage";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "管理 <?> 的APP";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Frm_APPManage_FormClosing);

@@ -25,6 +25,7 @@ namespace ToolsNT_API
         ToolsNT_exe_path = Path.Combine(InstallPath, "ToolsNT.exe"),
         ToolsNT_exe = $"\"{ToolsNT_exe_path}\"",
         aapt_arm_pie = Path.Combine(InstallPath, "Tools", "aapt-arm-pie"),
+        aapt_arm_pie_on_device = "/data/local/tmp/aapt-arm-pie",
         testkey_pk8_path = Path.Combine(InstallPath, "Tools", "testkey.pk8"),
         testkey_pk8 = $"\"{testkey_pk8_path}\"",
         testkey_x509_pem_path = Path.Combine(InstallPath, "Tools", "testkey.x509.pem"),
@@ -284,7 +285,7 @@ namespace ToolsNT_API
 
         public static class APP
         {
-            static string GetAppApkPath(string deviceID, string app_Package)
+            public static string GetAppApkPath(string deviceID, string app_Package)
             {
                 return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell pm path {app_Package}", true).Replace("package:", "");
             }
@@ -360,33 +361,38 @@ namespace ToolsNT_API
 
             public static class Infos
             {
-                public static bool ExistsAAPT(string DeviceID)
+                public static class AAPTSettings
                 {
-                    if (FM.Exists(DeviceID, "/data/local/tmp/aapt-arm-pie"))
+                    public static bool ExistsAAPT(string DeviceID)
                     {
-                        return true;
+                        if (FM.Exists(DeviceID, "/data/local/tmp/aapt-arm-pie"))
+                        {
+                            return true;
+                        }
+                        return false;
                     }
-                    return false;
+
+                    public static bool InstallAAPT(string deviceID)
+                    {
+                        if (FM.UpLoad(deviceID, aapt_arm_pie, "/data/local/tmp/"))
+                        {
+                            CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell chmod 0755 /data/local/tmp/aapt-arm-pie", true);
+                            return true;
+                        }
+                        return false;
+                    }
                 }
 
-                public static bool InstallAAPT(string DeviceID)
+                static string GetInfos(string deviceID, string app_Package)
                 {
-                    if (FM.UpLoad(DeviceID, aapt_arm_pie, "/data/local/tmp/"))
-                    {
-                        CommandHelper.Exec_UTF8($"{adb_exe} -s {DeviceID} shell chmod 0755 /data/local/tmp/aapt-arm-pie", true);
-                        return true;
-                    }
-                    return false;
+                    return CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell {aapt_arm_pie_on_device} d badging {GetAppApkPath(deviceID, app_Package)}", true);;
                 }
 
-                
-
-                public static string GetApplicationLabel(string appInfo)
+                public static string Get_Label(string deviceID, string app_Package)
                 {
-                    int labelStartIndex = appInfo.IndexOf("application-label:");
-                    int startIndex = labelStartIndex + "application-label:".Length;
-                    int endIndex = appInfo.IndexOf("'", startIndex);
-                    string appName = appInfo.Substring(startIndex, endIndex - startIndex);
+                    string appInfo = GetInfos(deviceID, app_Package);
+                    appInfo = appInfo.Substring(appInfo.IndexOf("application-label:'") + 19);
+                    string appName = appInfo.Substring(0, appInfo.IndexOf("\'"));
                     return appName;
                 }
             }
@@ -494,7 +500,6 @@ namespace ToolsNT_API
 
             }
             
-
             public static void Uninstall(string deviceID, string app_Package, bool keepData)
             {
                 if (!Devices.Exists(deviceID))
@@ -502,13 +507,13 @@ namespace ToolsNT_API
                     MessageBox.Show($"找不到设备\"{deviceID}\"", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                
+                /*
                 if (!GetList.All(deviceID).Contains(app_Package))
                 {
                     MessageBox.Show($"找不到APP\"{app_Package}\"", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                
+                */
                 string Command = !keepData ? $"{adb_exe} -s {deviceID} uninstall {app_Package}" : $"{adb_exe} -s {deviceID} shell cmd package uninstall -k {app_Package}";
                 string installResult;
                 Dlg_Loading uninstall_Progress = new Dlg_Loading("卸载中",$"卸载APP:\"{app_Package}\"");
@@ -530,6 +535,16 @@ namespace ToolsNT_API
                 uninstall_Thread.Start();
                 uninstall_Progress.ShowDialog();
                 return;
+            }
+
+            public static void EnableApp(string devicesID, string app_Package)
+            {
+                CommandHelper.Exec($"{adb_exe} -s {devicesID} shell pm enable {app_Package}", true);
+            }
+
+            public static void DisableApp(string devicesID, string app_Package)
+            {
+                CommandHelper.Exec($"{adb_exe} -s {devicesID} shell pm disable-user {app_Package}", true);
             }
         }
 

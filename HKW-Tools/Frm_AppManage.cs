@@ -16,116 +16,108 @@ namespace HKW_Tools
             this.mainFrm = mainFrm;
             selectedDevice = deviceID;
             Text = Text.Replace("<?>", selectedDevice);
-            
+            CheckForIllegalCrossThreadCalls = false;
             APPList_ListBox.HorizontalScrollbar = true;
-        }
-
-        public void Show_ALL_APPS()
-        {
-            APPList_ListBox.Items.Clear();
-            foreach (string APP_Package in ADB.APP.GetList.All(selectedDevice))
-            {
-                APPList_ListBox.Items.Add(APP_Package);
-            }
-        }
-
-        public void Show_System_APPS()
-        {
-            APPList_ListBox.Items.Clear();
-            foreach (string APP_Package in ADB.APP.GetList.Systems(selectedDevice))
-            {
-                APPList_ListBox.Items.Add(APP_Package);
-            }
-        }
-
-        public void Show_Thirds_APPS()
-        {
-            APPList_ListBox.Items.Clear();
-            foreach (string APP_Package in ADB.APP.GetList.Thirds(selectedDevice))
-            {
-                APPList_ListBox.Items.Add(APP_Package);
-            }
-        }
-
-        public void Show_DISABLE_APPS()
-        {
-            APPList_ListBox.Items.Clear();
-            foreach (string APP_Package in ADB.APP.GetList.Disables(selectedDevice))
-            {
-                APPList_ListBox.Items.Add(APP_Package);
-            }
-        }
-
-        public void Show_ENABLE_APPS()
-        {
-            APPList_ListBox.Items.Clear();
-            foreach (string APP_Package in ADB.APP.GetList.Enables(selectedDevice))
-            {
-                APPList_ListBox.Items.Add(APP_Package);
-            }
         }
 
         private void Frm_APPManage_Load(object sender, EventArgs e)
         {
-            Show_ALL_APPS();
+            if (!ADB.APP.Infos.AAPTSettings.ExistsAAPT(selectedDevice))
+            {
+                ADB.APP.Infos.AAPTSettings.InstallAAPT(selectedDevice);
+            }
+            ReShow();
         }
 
         private void ClickToShowALL_APPS_RaidoButton_Click(object sender, EventArgs e)
         {
-            Show_ALL_APPS();
+            ReShow();
         }
 
         private void ClickToShowDISABLE_APPS_RaidoButton_Click(object sender, EventArgs e)
         {
-            Show_DISABLE_APPS();
+            ReShow();
         }
 
         private void ClickToShowENABLE_APPS_RaidoButton_Click(object sender, EventArgs e)
         {
-            Show_ENABLE_APPS();
+            ReShow();
         }
 
         private void ClickToShowSYSTEM_APPS_RaidoButton_Click(object sender, EventArgs e)
         {
-            Show_System_APPS();
+            ReShow();
         }
 
         private void ClickToShowTHIRDS_APPS_RaidoButton_Click(object sender, EventArgs e)
         {
-            Show_Thirds_APPS();
+            ReShow();
         }
 
         private void ReShow()
         {
-            if (ClickToShowALL_APPS_RaidoButton.Checked)
+            Thread loadThread = new Thread(new ThreadStart(() =>
             {
-                Show_ALL_APPS();
-            }
-            if (ClickToShowDISABLE_APPS_RaidoButton.Checked)
-            {
-                Show_DISABLE_APPS();
-            }
-            if (ClickToShowENABLE_APPS_RaidoButton.Checked)
-            {
-                Show_ENABLE_APPS();
-            }
-            if (ClickToShowSYSTEM_APPS_RaidoButton.Checked)
-            {
-                Show_System_APPS();
-            }
-            if (ClickToShowTHIRDS_APPS_RaidoButton.Checked)
-            {
-                Show_Thirds_APPS();
-            }
+                UninstallAPP_Button.Enabled = false;
+                EnableAPP_Button.Enabled = false;
+                DisableAPP_Button.Enabled = false;
+                RadioButton_GroupBox.Enabled = false;
+                if (ClickToShowALL_APPS_RaidoButton.Checked)
+                {
+                    APPList_ListBox.Items.Clear();
+                    foreach (string app_Package in ADB.APP.GetList.All(selectedDevice))
+                    {
+                        APPList_ListBox.Items.Add($"[{ADB.APP.Infos.Get_Label(selectedDevice, app_Package)}] {app_Package}");
+                    }
+                }
+                if (ClickToShowDISABLE_APPS_RaidoButton.Checked)
+                {
+                    APPList_ListBox.Items.Clear();
+                    foreach (string app_Package in ADB.APP.GetList.Disables(selectedDevice))
+                    {
+                        APPList_ListBox.Items.Add($"[{ADB.APP.Infos.Get_Label(selectedDevice, app_Package)}] {app_Package}");
+                    }
+                }
+                if (ClickToShowENABLE_APPS_RaidoButton.Checked)
+                {
+                    APPList_ListBox.Items.Clear();
+                    foreach (string app_Package in ADB.APP.GetList.Enables(selectedDevice))
+                    {
+                        APPList_ListBox.Items.Add($"[{ADB.APP.Infos.Get_Label(selectedDevice, app_Package)}] {app_Package}");
+                    }
+                }
+                if (ClickToShowSYSTEM_APPS_RaidoButton.Checked)
+                {
+                    APPList_ListBox.Items.Clear();
+                    foreach (string app_Package in ADB.APP.GetList.Systems(selectedDevice))
+                    {
+                        APPList_ListBox.Items.Add($"[{ADB.APP.Infos.Get_Label(selectedDevice, app_Package)}] {app_Package}");
+                    }
+                }
+                if (ClickToShowTHIRDS_APPS_RaidoButton.Checked)
+                {
+                    APPList_ListBox.Items.Clear();
+                    foreach (string app_Package in ADB.APP.GetList.Thirds(selectedDevice))
+                    {
+                        APPList_ListBox.Items.Add($"[{ADB.APP.Infos.Get_Label(selectedDevice, app_Package)}] {app_Package}");
+                    }
+                }
+                UninstallAPP_Button.Enabled = true;
+                EnableAPP_Button.Enabled = true;
+                DisableAPP_Button.Enabled = true;
+                RadioButton_GroupBox.Enabled = true;
+            }));
+            loadThread.Start();
         }
 
         private string Get_SelectedApp()
         {
-            if (APPList_ListBox.SelectedItem == null || APPList_ListBox.SelectedItem.ToString() == "无")
+            if (APPList_ListBox.SelectedItem != null)
             {
-                return null;
+                string app_Package = APPList_ListBox.SelectedItem.ToString();
+                return app_Package.Substring(app_Package.LastIndexOf("] ") + 1).Trim('\r', '\n');
             }
-            return APPList_ListBox.SelectedItem.ToString().Trim('\r', '\n');
+            return null;
         }
 
 
@@ -159,11 +151,6 @@ namespace HKW_Tools
             return;
         }
 
-        private void ClickToShowALL_APPS_RaidoButton_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void Frm_APPManage_FormClosing(object sender, FormClosingEventArgs e)
         {
             mainFrm.ShowMainFrm();
@@ -178,17 +165,49 @@ namespace HKW_Tools
                 if (selectResult == DialogResult.OK)
                 {
                     string saveDir = SelectDirDlg.SelectedPath;
+                    bool saveOK = false;
                     Dlg_Loading saveApkProgressDlg = new Dlg_Loading("请等待", "正在保存Apk......");
                     Thread saveApkThread = new Thread(new ThreadStart(() =>
                     {
-                        ADB.APP.PullApp(selectedDevice, selectedApp, saveDir);
+                        saveOK = ADB.APP.PullApp(selectedDevice, selectedApp, saveDir);
                         saveApkProgressDlg.Hide();
+                        if (saveOK)
+                        {
+                            MessageBox.Show("提取成功!", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("提取失败", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                         saveApkProgressDlg.Close();
                     }));
                     saveApkThread.Start();
                     saveApkProgressDlg.ShowDialog();
                 }
             }
+        }
+
+        private void DisableAPP_Button_Click(object sender, EventArgs e)
+        {
+            if (Get_SelectedApp() != null)
+            {
+                string selectedApp = Get_SelectedApp();
+                ADB.APP.DisableApp(selectedDevice, selectedApp);
+                MessageBox.Show("操作完成!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            ReShow();
+        }
+
+        private void EnableAPP_Button_Click(object sender, EventArgs e)
+        {
+            if (Get_SelectedApp() != null)
+            {
+                string selectedApp = Get_SelectedApp();
+                ADB.APP.EnableApp(selectedDevice, selectedApp);
+                
+                MessageBox.Show("操作完成!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            ReShow();
         }
     }
 }
