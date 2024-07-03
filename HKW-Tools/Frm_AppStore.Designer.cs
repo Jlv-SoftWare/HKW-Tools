@@ -205,6 +205,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Frm_AppStore";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "应用商店";
             this.Load += new System.EventHandler(this.Frm_AppStore_Load);

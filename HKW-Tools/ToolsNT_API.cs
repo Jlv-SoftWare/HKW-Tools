@@ -183,27 +183,21 @@ namespace ToolsNT_API
 
                 // 处理命令输出，提取设备列表
                 string[] lines = result.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (lines.Length > 1)  // 第一行为输出的标题，第二行开始为设备列表
+                List<string> devices = new List<string>();
+                foreach (string line in lines)
                 {
-                    List<string> devices = new List<string>();
-
-                    foreach (string line in lines)
+                    if (line.EndsWith("\toffline") || line.StartsWith("List of "))
                     {
-                        if (line.EndsWith("\toffline") || line.StartsWith("List of"))
-                        {
-                            continue;
-                        }
-                        string deviceName = line.Substring(0, line.LastIndexOf("\tdevice"));
-                        devices.Add(deviceName.Trim());
+                        continue;
                     }
-
-                    return devices.ToArray();
+                    string deviceName = line.Substring(0, line.LastIndexOf("\tdevice"));
+                    devices.Add(deviceName.Trim());
                 }
-                else
+                if (devices.Count == 0)
                 {
                     return new string[] { "无" };
                 }
+                return devices.ToArray();
             }
 
             public static bool Connect(string ip, string tcp_ip)
@@ -290,6 +284,17 @@ namespace ToolsNT_API
 
         public static class APP
         {
+            static string GetAppApkPath(string deviceID, string app_Package)
+            {
+                return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell pm path {app_Package}", true).Replace("package:", "");
+            }
+
+            public static bool PullApp(string deviceID, string app_Package, string saveDir)
+            {
+                string appApkPath = GetAppApkPath(deviceID, app_Package);
+                return FM.DownLoad(deviceID, appApkPath, saveDir, $"{app_Package}.apk");
+            }
+
             public static class GetList
             {
                 public static string[] All(string deviceID)
@@ -497,13 +502,13 @@ namespace ToolsNT_API
                     MessageBox.Show($"找不到设备\"{deviceID}\"", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                /*
+                
                 if (!GetList.All(deviceID).Contains(app_Package))
                 {
                     MessageBox.Show($"找不到APP\"{app_Package}\"", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                */
+                
                 string Command = !keepData ? $"{adb_exe} -s {deviceID} uninstall {app_Package}" : $"{adb_exe} -s {deviceID} shell cmd package uninstall -k {app_Package}";
                 string installResult;
                 Dlg_Loading uninstall_Progress = new Dlg_Loading("卸载中",$"卸载APP:\"{app_Package}\"");
@@ -689,6 +694,24 @@ namespace ToolsNT_API
                 string Command = $"{adb_exe} -s {deviceID} pull \"{devicePath}\" \"{saveDir}\"";
                 CommandHelper.Exec(Command, true);
                 if (Directory.Exists(SavePath) || File.Exists(SavePath))
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            public static bool DownLoad(string deviceID, string devicePath, string saveDir, string saveFileName)
+            {
+
+                string savePath = Path.Combine(saveDir, saveFileName);
+                if (!Directory.Exists(saveDir))
+                {
+                    return false;
+                }
+
+                string Command = $"{adb_exe} -s {deviceID} pull \"{devicePath}\" \"{Path.Combine(savePath)}\"";
+                CommandHelper.Exec(Command, true);
+                if (Directory.Exists(savePath) || File.Exists(savePath))
                 {
                     return true;
                 }

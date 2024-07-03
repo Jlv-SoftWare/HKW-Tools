@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Frm_AppManage));
             this.APPList_ListBox = new System.Windows.Forms.ListBox();
             this.PullAPP_Button = new System.Windows.Forms.Button();
             this.UninstallAPP_Button = new System.Windows.Forms.Button();
@@ -39,6 +40,7 @@
             this.ClickToShowSYSTEM_APPS_RaidoButton = new System.Windows.Forms.RadioButton();
             this.ClickToShowDISABLE_APPS_RaidoButton = new System.Windows.Forms.RadioButton();
             this.ClickToShowALL_APPS_RaidoButton = new System.Windows.Forms.RadioButton();
+            this.SelectDirDlg = new System.Windows.Forms.FolderBrowserDialog();
             this.RadioButton_GroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,6 +61,7 @@
             this.PullAPP_Button.TabIndex = 1;
             this.PullAPP_Button.Text = "提取";
             this.PullAPP_Button.UseVisualStyleBackColor = true;
+            this.PullAPP_Button.Click += new System.EventHandler(this.PullAPP_Button_Click);
             // 
             // UninstallAPP_Button
             // 
@@ -164,7 +167,7 @@
             this.ClickToShowALL_APPS_RaidoButton.CheckedChanged += new System.EventHandler(this.ClickToShowALL_APPS_RaidoButton_CheckedChanged);
             this.ClickToShowALL_APPS_RaidoButton.Click += new System.EventHandler(this.ClickToShowALL_APPS_RaidoButton_Click);
             // 
-            // Frm_APPManage
+            // Frm_AppManage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -177,10 +180,11 @@
             this.Controls.Add(this.APPList_ListBox);
             this.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Frm_APPManage";
+            this.Name = "Frm_AppManage";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -206,5 +210,6 @@
         private System.Windows.Forms.RadioButton ClickToShowSYSTEM_APPS_RaidoButton;
         private System.Windows.Forms.RadioButton ClickToShowTHIRDS_APPS_RaidoButton;
         private System.Windows.Forms.RadioButton ClickToShowENABLE_APPS_RaidoButton;
+        private System.Windows.Forms.FolderBrowserDialog SelectDirDlg;
     }
 }

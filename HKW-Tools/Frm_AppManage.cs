@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 using ToolsNT_API;
 
@@ -166,6 +167,28 @@ namespace HKW_Tools
         private void Frm_APPManage_FormClosing(object sender, FormClosingEventArgs e)
         {
             mainFrm.ShowMainFrm();
+        }
+
+        private void PullAPP_Button_Click(object sender, EventArgs e)
+        {
+            if (Get_SelectedApp() != null)
+            {
+                string selectedApp = Get_SelectedApp();
+                DialogResult selectResult = SelectDirDlg.ShowDialog();
+                if (selectResult == DialogResult.OK)
+                {
+                    string saveDir = SelectDirDlg.SelectedPath;
+                    Dlg_Loading saveApkProgressDlg = new Dlg_Loading("请等待", "正在保存Apk......");
+                    Thread saveApkThread = new Thread(new ThreadStart(() =>
+                    {
+                        ADB.APP.PullApp(selectedDevice, selectedApp, saveDir);
+                        saveApkProgressDlg.Hide();
+                        saveApkProgressDlg.Close();
+                    }));
+                    saveApkThread.Start();
+                    saveApkProgressDlg.ShowDialog();
+                }
+            }
         }
     }
 }

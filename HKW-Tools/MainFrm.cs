@@ -95,10 +95,11 @@ namespace HKW_Tools
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(Download_apk));
             }
+            
             if (ShowDevices_ComboBox.Items.Count == 0)
             {
                 ShowDevices_ComboBox.Items.Clear();
-                foreach (var item in ADB.Devices.List())
+                foreach (string item in ADB.Devices.List())
                 {
                     ShowDevices_ComboBox.Items.Add(item);
                 }
