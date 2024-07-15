@@ -28,30 +28,46 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.Show_DeviceInfo_TextBox = new System.Windows.Forms.TextBox();
+            this.HelpLabel1 = new System.Windows.Forms.Label();
+            this.HelpLabel2 = new System.Windows.Forms.Label();
+            this.HelpLabel3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // Show_DeviceInfo_TextBox
+            // HelpLabel1
             // 
-            this.Show_DeviceInfo_TextBox.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.Show_DeviceInfo_TextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Show_DeviceInfo_TextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.Show_DeviceInfo_TextBox.Location = new System.Drawing.Point(18, 12);
-            this.Show_DeviceInfo_TextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.Show_DeviceInfo_TextBox.Multiline = true;
-            this.Show_DeviceInfo_TextBox.Name = "Show_DeviceInfo_TextBox";
-            this.Show_DeviceInfo_TextBox.ReadOnly = true;
-            this.Show_DeviceInfo_TextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.Show_DeviceInfo_TextBox.Size = new System.Drawing.Size(462, 237);
-            this.Show_DeviceInfo_TextBox.TabIndex = 0;
-            this.Show_DeviceInfo_TextBox.WordWrap = false;
+            this.HelpLabel1.AutoSize = true;
+            this.HelpLabel1.Location = new System.Drawing.Point(33, 34);
+            this.HelpLabel1.Name = "HelpLabel1";
+            this.HelpLabel1.Size = new System.Drawing.Size(35, 17);
+            this.HelpLabel1.TabIndex = 0;
+            this.HelpLabel1.Text = "名称:";
+            // 
+            // HelpLabel2
+            // 
+            this.HelpLabel2.AutoSize = true;
+            this.HelpLabel2.Location = new System.Drawing.Point(33, 63);
+            this.HelpLabel2.Name = "HelpLabel2";
+            this.HelpLabel2.Size = new System.Drawing.Size(82, 17);
+            this.HelpLabel2.TabIndex = 1;
+            this.HelpLabel2.Text = "Android版本:";
+            // 
+            // HelpLabel3
+            // 
+            this.HelpLabel3.AutoSize = true;
+            this.HelpLabel3.Location = new System.Drawing.Point(33, 80);
+            this.HelpLabel3.Name = "HelpLabel3";
+            this.HelpLabel3.Size = new System.Drawing.Size(43, 17);
+            this.HelpLabel3.TabIndex = 2;
+            this.HelpLabel3.Text = "label1";
             // 
             // Frm_ShowDeviceInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(491, 260);
-            this.Controls.Add(this.Show_DeviceInfo_TextBox);
+            this.Controls.Add(this.HelpLabel3);
+            this.Controls.Add(this.HelpLabel2);
+            this.Controls.Add(this.HelpLabel1);
             this.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
@@ -70,6 +86,8 @@
 
         #endregion
 
-        public System.Windows.Forms.TextBox Show_DeviceInfo_TextBox;
+        private System.Windows.Forms.Label HelpLabel1;
+        private System.Windows.Forms.Label HelpLabel2;
+        private System.Windows.Forms.Label HelpLabel3;
     }
 }

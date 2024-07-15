@@ -57,6 +57,7 @@ namespace HKW_Tools
                 ShowChilds_ListBox.Items.Clear();
                 if (!ADB.FM.Path_CanOpen(selectedDevice, Input_MaxPath_TextBox.Text))
                 {
+                    MessageBox.Show(Input_MaxPath_TextBox.Text);
                     MessageBox.Show("无法打开这个路径", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Input_MaxPath_TextBox.Text = LastOpened_Path;
                 }

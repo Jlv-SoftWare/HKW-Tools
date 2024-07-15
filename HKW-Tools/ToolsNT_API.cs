@@ -22,8 +22,8 @@ namespace ToolsNT_API
         adb_exe = $"\"{adb_exe_path}\"",
         AdbWinApi_dll = Path.Combine(InstallPath, "ADB", "AdbWinApi.dll"),
         AdbWinUsbApi_dll = Path.Combine(InstallPath, "ADB", "AdbWinUsbApi.dll"),
-        ToolsNT_exe_path = Path.Combine(InstallPath, "ToolsNT.exe"),
-        ToolsNT_exe = $"\"{ToolsNT_exe_path}\"",
+        LinkShell_bat_path = Path.Combine(InstallPath, "LinkShell.bat"),
+        LinkShell_bat = $"\"{LinkShell_bat_path}\"",
         aapt_arm_pie = Path.Combine(InstallPath, "Tools", "aapt-arm-pie"),
         aapt_arm_pie_on_device = "/data/local/tmp/aapt-arm-pie",
         testkey_pk8_path = Path.Combine(InstallPath, "Tools", "testkey.pk8"),
@@ -46,7 +46,8 @@ namespace ToolsNT_API
 
     static class CommandHelper
     {
-        public static string Exec(string command, bool createNoWindow)
+        /*
+        public static string _Exec(string command, bool createNoWindow)
         {
             command = (command.Trim().TrimEnd('&') + "&exit").Trim('\r', '\n');
             using (Process p = new Process())
@@ -64,11 +65,53 @@ namespace ToolsNT_API
                 //获取cmd窗口的输出信息
                 StreamReader reader = p.StandardOutput;//截取输出流
                 StreamReader error = p.StandardError;//截取错误信息
-                string Returnedstr = reader.ReadToEnd() + error.ReadToEnd();
-                Returnedstr = Returnedstr.Substring(Returnedstr.IndexOf("&exit")).Substring(7);
+                string returnedstr = reader.ReadToEnd() + error.ReadToEnd();
+                returnedstr = returnedstr.Substring(returnedstr.IndexOf("&exit")).Substring(7);
                 p.WaitForExit();//等待程序执行完退出进程
                 p.Close();
-                return Returnedstr.TrimEnd('\r', '\n');
+                return returnedstr.TrimEnd('\r', '\n');
+            }
+        }
+        */
+        public static string Exec(string command, bool createNoWindow)
+        {
+            command = (command.Trim().TrimEnd('&') + "&exit").Trim('\r', '\n');
+            using (Process p = new Process())
+            {
+                p.StartInfo.FileName = "cmd.exe";
+                p.StartInfo.UseShellExecute = false;        // 是否使用操作系统shell启动
+                p.StartInfo.RedirectStandardInput = true;   // 接受来自调用程序的输入信息
+                p.StartInfo.RedirectStandardOutput = true;  // 由调用程序获取输出信息
+                p.StartInfo.RedirectStandardError = true;   // 重定向标准错误输出
+                p.StartInfo.CreateNoWindow = createNoWindow; // 显示程序窗口?
+
+                p.Start(); // 启动程序
+
+                // 向cmd窗口写入命令，使用指定的编码
+                using (StreamWriter sw = new StreamWriter(p.StandardInput.BaseStream, Encoding.GetEncoding("GBK")))
+                {
+                    sw.WriteLine(command);
+                }
+
+                // 获取cmd窗口的输出信息，使用指定的编码
+                string output;
+                using (StreamReader sr = new StreamReader(p.StandardOutput.BaseStream, Encoding.GetEncoding("GBK")))
+                {
+                    output = sr.ReadToEnd();
+                }
+                string errorOutput;
+
+                using (StreamReader sr = new StreamReader(p.StandardError.BaseStream, Encoding.GetEncoding("GBK")))
+                {
+                    errorOutput = sr.ReadToEnd();
+                }
+
+                output += errorOutput;
+
+                // 等待程序执行完退出进程
+                p.WaitForExit();
+
+                return output.Substring(output.IndexOf("&exit")).Substring(7).TrimEnd('\r', '\n');
             }
         }
 
@@ -135,7 +178,7 @@ namespace ToolsNT_API
                 Dlg_Loading startserver_Progress = new Dlg_Loading("初始化", "正在启动ADB服务");
                 Thread startserver_Thread = new Thread(new ThreadStart(() =>
                 {
-                    CommandHelper.Exec_UTF8($"{adb_exe} start-server", true);
+                    CommandHelper.Exec($"{adb_exe} start-server", true);
                     startserver_Progress.Hide();
                     startserver_Progress.Close();
                     return;
@@ -150,7 +193,7 @@ namespace ToolsNT_API
                 Dlg_Loading restartserver_Progress = new Dlg_Loading("操作", "正在重启ADB服务");
                 Thread restartserver_Thread = new Thread(new ThreadStart(() =>
                 {
-                    CommandHelper.Exec_UTF8($"{adb_exe} kill-server &{adb_exe} start-server", true);
+                    CommandHelper.Exec($"{adb_exe} kill-server &{adb_exe} start-server", true);
                     restartserver_Progress.Hide();
                     restartserver_Progress.Close();
                     return;
@@ -165,7 +208,7 @@ namespace ToolsNT_API
                 Dlg_Loading stopserver_Progress = new Dlg_Loading("操作", "正在停止ADB服务");
                 Thread stopserver_Thread = new Thread(new ThreadStart(() =>
                 {
-                    CommandHelper.Exec_UTF8($"{adb_exe} kill-server", true);
+                    CommandHelper.Exec($"{adb_exe} kill-server", true);
                     stopserver_Progress.Hide();
                     stopserver_Progress.Close();
                     return;
@@ -211,7 +254,7 @@ namespace ToolsNT_API
                 string ConnectResult = ""; bool JobResult = false;
                 Thread Connecting_Thread = new Thread(new ThreadStart(() =>
                 {
-                    ConnectResult = CommandHelper.Exec_UTF8($"{adb_exe} connect {ip}:{tcp_ip}", true);
+                    ConnectResult = CommandHelper.Exec($"{adb_exe} connect {ip}:{tcp_ip}", true);
                     if (ConnectResult.StartsWith("connected to"))
                     {
                         JobResult = true;
@@ -231,7 +274,7 @@ namespace ToolsNT_API
                 string ConnectResult = ""; bool JobResult = false;
                 Thread Connecting_Thread = new Thread(new ThreadStart(() =>
                 {
-                    ConnectResult = CommandHelper.Exec_UTF8($"{adb_exe} pair {ip}:{tcp_ip} {pairCode}",true);
+                    ConnectResult = CommandHelper.Exec($"{adb_exe} pair {ip}:{tcp_ip} {pairCode}",true);
                     if (ConnectResult.StartsWith("Successfully paired"))
                     {
                         JobResult = true;
@@ -268,16 +311,54 @@ namespace ToolsNT_API
                 return Result;
             }
 
-            public static string Info(string deviceID)
+            public static class Infos
             {
-                return CommandHelper.Exec($"ToolsNT deviceinfo {deviceID}", true);
+                public static float Android_Version(string deviceID)
+                {
+                    return float.Parse(CommandHelper.Exec($"{adb_exe} -s {deviceID} shell getprop ro.build.version.release", true));
+                }
+
+                public static string Model(string deviceID)
+                {
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell getprop ro.product.model", true);
+                }
+
+                public static string Manufacturer(string deviceID)
+                {
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell getprop ro.product.manufacturer", true);
+                }
+
+                public static string CPU_Infos(string deviceID)
+                {
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell cat /proc/cpuinfo", true);
+                }
+
+                public static string Storage_Infos(string deviceID)
+                {
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell df", true);
+                }
+
+                public static string DPI_Info(string deviceID)
+                {
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell wm density", true);
+                }
+
+                public static string Screen_Info(string deviceID)
+                {
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell wm size", true);
+                }
+
+                public static string Battery_Info(string deviceID)
+                {
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell dumpsys battery", true);
+                }
             }
 
             public static void LinkShell(string deviceID)
             {
                 Thread linkThread = new Thread(new ThreadStart(() =>
                 {
-                    CommandHelper.Exec_UTF8($"start ToolsNT linkshell {deviceID}", true);
+                    CommandHelper.Exec($"{LinkShell_bat} {adb_exe} {deviceID}", true);
                 }));
                 linkThread.Start();
             }
@@ -301,7 +382,7 @@ namespace ToolsNT_API
                 public static string[] All(string deviceID)
                 {
                     string command = $"{adb_exe} -s {deviceID} shell pm list packages";
-                    string[] noapps = { "无" }, appList = CommandHelper.Exec_UTF8(command, true).Trim().Replace("package:", "").Split('\n');
+                    string[] noapps = { "无" }, appList = CommandHelper.Exec(command, true).Trim().Replace("package:", "").Split('\n');
 
                     if (appList[0] == "")
                     {
@@ -313,7 +394,7 @@ namespace ToolsNT_API
                 public static string[] Thirds(string deviceID)
                 {
                     string command = $"{adb_exe} -s {deviceID} shell pm list packages -3";
-                    string[] noapps = { "无" }, appList = CommandHelper.Exec_UTF8(command, true).Trim().Replace("package:", "").Split('\n');
+                    string[] noapps = { "无" }, appList = CommandHelper.Exec(command, true).Trim().Replace("package:", "").Split('\n');
 
                     if (appList[0] == "")
                     {
@@ -325,7 +406,7 @@ namespace ToolsNT_API
                 public static string[] Systems(string deviceID)
                 {
                     string command = $"{adb_exe} -s {deviceID} shell pm list packages -s";
-                    string[] noapps = { "无" }, appList = CommandHelper.Exec_UTF8(command, true).Trim().Replace("package:", "").Split('\n');
+                    string[] noapps = { "无" }, appList = CommandHelper.Exec(command, true).Trim().Replace("package:", "").Split('\n');
 
                     if (appList[0] == "")
                     {
@@ -337,7 +418,7 @@ namespace ToolsNT_API
                 public static string[] Disables(string deviceID)
                 {
                     string command = $"{adb_exe} -s {deviceID} shell pm list packages -d";
-                    string[] noapps = { "无" }, appList = CommandHelper.Exec_UTF8(command, true).Trim().Replace("package:", "").Split('\n');
+                    string[] noapps = { "无" }, appList = CommandHelper.Exec(command, true).Trim().Replace("package:", "").Split('\n');
 
                     if (appList[0] == "")
                     {
@@ -349,7 +430,7 @@ namespace ToolsNT_API
                 public static string[] Enables(string deviceID)
                 {
                     string command = $"{adb_exe} -s {deviceID} shell pm list packages -e";
-                    string[] noapps = { "无" }, appList = CommandHelper.Exec_UTF8(command, true).Trim().Replace("package:", "").Split('\n');
+                    string[] noapps = { "无" }, appList = CommandHelper.Exec(command, true).Trim().Replace("package:", "").Split('\n');
 
                     if (appList[0] == "")
                     {
@@ -376,7 +457,7 @@ namespace ToolsNT_API
                     {
                         if (FM.UpLoad(deviceID, aapt_arm_pie, "/data/local/tmp/"))
                         {
-                            CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell chmod 0755 /data/local/tmp/aapt-arm-pie", true);
+                            CommandHelper.Exec($"{adb_exe} -s {deviceID} shell chmod 0755 /data/local/tmp/aapt-arm-pie", true);
                             return true;
                         }
                         return false;
@@ -385,7 +466,7 @@ namespace ToolsNT_API
 
                 static string GetInfos(string deviceID, string app_Package)
                 {
-                    return CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell {aapt_arm_pie_on_device} d badging {GetAppApkPath(deviceID, app_Package)}", true);;
+                    return CommandHelper.Exec($"{adb_exe} -s {deviceID} shell {aapt_arm_pie_on_device} d badging {GetAppApkPath(deviceID, app_Package)}", true);
                 }
 
                 public static string Get_Label(string deviceID, string app_Package)
@@ -519,7 +600,7 @@ namespace ToolsNT_API
                 Dlg_Loading uninstall_Progress = new Dlg_Loading("卸载中",$"卸载APP:\"{app_Package}\"");
                 Thread uninstall_Thread = new Thread(new ThreadStart(() =>
                 {
-                    installResult = CommandHelper.Exec_UTF8(Command, true);
+                    installResult = CommandHelper.Exec(Command, true);
                     uninstall_Progress.Hide();
                     if (installResult.EndsWith("Success"))
                     {
@@ -583,7 +664,7 @@ namespace ToolsNT_API
 
             public static void Record(string deviceID, string saveVideoPath)
             {
-                CommandHelper.Exec_UTF8($"{scrcpy_exe} -s {deviceID} -r {saveVideoPath}", true);
+                CommandHelper.Exec($"{scrcpy_exe} -s {deviceID} -r {saveVideoPath}", true);
             }
 
             public static string Get_a_ScreenShot(string deviceID, string screenShotSaveDir)
@@ -612,52 +693,22 @@ namespace ToolsNT_API
             public static bool Exists(string deviceID, string maxPath)
             {
                 string Command = $"{adb_exe} -s {deviceID} shell [ -e \"{maxPath}\" ] && echo \"True\" || echo \"False\"";
-                bool BOOL;
-                switch (CommandHelper.Exec(Command, true).Trim())
-                {
-                    case "\"True\"":
-                        BOOL = true;
-                        break;
-
-                    case "\"False\"":
-                        BOOL = false;
-                        break;
-
-                    default:
-                        BOOL = false;
-                        break;
-                }
-                return BOOL;
+                return CommandHelper.Exec_UTF8(Command, true).Trim(' ', '\r', '\n').Contains("\"True\"");
             }
 
             public static bool Path_CanOpen(string deviceID, string maxPath)
             {
-                if (!Exists(deviceID, maxPath))
+                if (Exists(deviceID, maxPath))
                 {
-                    return false;
+                    return CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell ls {maxPath}", true).Contains("ls: ") == false;
                 }
-                if (CommandHelper.Exec($"{adb_exe} -s {deviceID} shell ls {maxPath}", true).StartsWith("ls: "))
-                {
-                    return false;
-                }
-                return true;
+                return false;
             }
 
             public static bool Is_Dictionary(string deviceID, string maxPath)
             {
-                string Command = $"{adb_exe} -s {deviceID} shell [ -d \"{maxPath}\" ] && echo \"True\" || echo \"False\"";
-                bool BOOL;
-                switch (CommandHelper.Exec_UTF8(Command, true).Trim())
-                {
-                    case "\"False\"": 
-                        BOOL = false;
-                        break;
-
-                    default:
-                        BOOL = true; 
-                        break;
-                }
-                return BOOL;
+                string result = CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell [ -d \"{maxPath}\" ] && echo \"True\" || echo \"False\"", true);
+                return result.Contains("\"True\"");
 
             }
 
@@ -699,36 +750,19 @@ namespace ToolsNT_API
 
             public static bool DownLoad(string deviceID, string devicePath, string saveDir)
             {
-                
-                string SavePath = Path.Combine(saveDir, GetFileName(devicePath));
-                if (!Directory.Exists(saveDir))
-                {
-                    return false;
-                }
-
-                string Command = $"{adb_exe} -s {deviceID} pull \"{devicePath}\" \"{saveDir}\"";
-                CommandHelper.Exec(Command, true);
-                if (Directory.Exists(SavePath) || File.Exists(SavePath))
-                {
-                    return true;
-                }
-                return false;
+                string savePath = Path.Combine(saveDir, GetFileName(devicePath));
+                MessageBox.Show(CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} pull {devicePath} {savePath}", true));
+                return File.Exists(savePath) || Directory.Exists(savePath);
             }
-
+            /**/
             public static bool DownLoad(string deviceID, string devicePath, string saveDir, string saveFileName)
             {
 
                 string savePath = Path.Combine(saveDir, saveFileName);
-                if (!Directory.Exists(saveDir))
+                if (Directory.Exists(saveDir))
                 {
-                    return false;
-                }
-
-                string Command = $"{adb_exe} -s {deviceID} pull \"{devicePath}\" \"{Path.Combine(savePath)}\"";
-                CommandHelper.Exec(Command, true);
-                if (Directory.Exists(savePath) || File.Exists(savePath))
-                {
-                    return true;
+                    CommandHelper.Exec($"{adb_exe} -s {deviceID} pull \"{devicePath}\" \"{Path.Combine(savePath)}\"", true);
+                    return Directory.Exists(savePath) || File.Exists(savePath);
                 }
                 return false;
             }
@@ -748,7 +782,7 @@ namespace ToolsNT_API
             public static bool Delete(string deviceID, string devicePath)
             {
                 string Command = $"{adb_exe} -s {deviceID} shell rm -rf \"{devicePath}\"";
-                CommandHelper.Exec_UTF8(Command, true);
+                CommandHelper.Exec(Command, true);
 
                 if (!Exists(deviceID, devicePath))
                 {
@@ -759,7 +793,7 @@ namespace ToolsNT_API
 
             public static bool CreateDir(string deviceID, string dirPathToCreate)
             {
-                CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell mkdir -p {dirPathToCreate}", true);
+                CommandHelper.Exec($"{adb_exe} -s {deviceID} shell mkdir -p {dirPathToCreate}", true);
                 
                 if (Exists(deviceID, dirPathToCreate))
                 {
@@ -775,7 +809,7 @@ namespace ToolsNT_API
                     return false;
                 }
                 string SavePath = CombinePaths(deviceSaveDir, GetFileName(devicePathToCopy));
-                CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell cp -f \"{devicePathToCopy}\" \"{deviceSaveDir}\"", true);
+                CommandHelper.Exec($"{adb_exe} -s {deviceID} shell cp -f \"{devicePathToCopy}\" \"{deviceSaveDir}\"", true);
                 if (Exists(deviceID, SavePath))
                 {
                     return true;
@@ -790,7 +824,7 @@ namespace ToolsNT_API
                     return false;
                 }
                 string SavePath = CombinePaths(deviceSaveDir, GetFileName(devicePathToMove));
-                CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell mv -f \"{devicePathToMove}\" \"{deviceSaveDir}\"", true);
+                CommandHelper.Exec($"{adb_exe} -s {deviceID} shell mv -f \"{devicePathToMove}\" \"{deviceSaveDir}\"", true);
                 if (Exists(deviceID, SavePath))
                 {
                     return true;
@@ -804,7 +838,7 @@ namespace ToolsNT_API
                 {
                     return false;
                 }
-                CommandHelper.Exec_UTF8($"{adb_exe} -s {deviceID} shell mv -f \"{deviceOldNamePath}\" \"{deviceNewNamePath}\"", true);
+                CommandHelper.Exec($"{adb_exe} -s {deviceID} shell mv -f \"{deviceOldNamePath}\" \"{deviceNewNamePath}\"", true);
                 if (Exists(deviceID, deviceNewNamePath))
                 {
                     return true;
@@ -829,6 +863,7 @@ namespace ToolsNT_API
             return true;
         }
 
+        /*
         public static bool ExistsToolsNT()
         {
             if (!File.Exists(ToolsNT_exe_path))
@@ -837,6 +872,7 @@ namespace ToolsNT_API
             }
             return true;
         }
+        */
     }
 
     namespace WebTools

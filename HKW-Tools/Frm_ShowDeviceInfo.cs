@@ -17,7 +17,7 @@ namespace HKW_Tools
 
         private void Frm_ShowDeviceInfo_Load(object sender, EventArgs e)
         {
-            Show_DeviceInfo_TextBox.Text = ADB.Devices.Info(selectedDevice);
+            
         }
 
     }

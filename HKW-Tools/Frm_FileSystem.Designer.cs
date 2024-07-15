@@ -59,7 +59,7 @@
             this.ShowChilds_ListBox.HorizontalScrollbar = true;
             this.ShowChilds_ListBox.ItemHeight = 17;
             this.ShowChilds_ListBox.Location = new System.Drawing.Point(12, 44);
-            this.ShowChilds_ListBox.Margin = new System.Windows.Forms.Padding(4);
+            this.ShowChilds_ListBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.ShowChilds_ListBox.Name = "ShowChilds_ListBox";
             this.ShowChilds_ListBox.Size = new System.Drawing.Size(206, 344);
             this.ShowChilds_ListBox.TabIndex = 0;
@@ -273,12 +273,11 @@
             this.Controls.Add(this.ShowChilds_ListBox);
             this.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Frm_FileSystem";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "管理 <?> 的文件";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Frm_FileSystem_FormClosing);

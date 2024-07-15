@@ -19,11 +19,6 @@ namespace HKW_Tools
                 MessageBox.Show("HKW工具箱找不到ADB组件", "致命错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(2);
             }
-            if (!ADB.ExistsToolsNT())
-            {
-                MessageBox.Show("HKW工具箱找不到ToolsNT", "致命错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(2);
-            }
             return;
         }
         /// <summary>
