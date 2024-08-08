@@ -193,7 +193,7 @@ namespace HKW_Tools
 
         private void ClickTo_CastScreen_Button_Click(object sender, EventArgs e)
         {
-            if (!File.Exists(scrcpy_exe))
+            if (!File.Exists(scrcpy_exe_path))
             {
                 MessageBox.Show("找不到投屏组件(Scrcpy)", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

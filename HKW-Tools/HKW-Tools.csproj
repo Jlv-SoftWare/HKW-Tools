@@ -64,7 +64,7 @@
     <ManifestKeyFile>HKW-Tools_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Jlv-Software.pfx</AssemblyOriginatorKeyFile>

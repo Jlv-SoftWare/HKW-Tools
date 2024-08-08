@@ -1,9 +1,9 @@
 # HKW工具箱
-> 一个使用C#编写的ADB工具箱，适用于华为儿童手表的ADB工具箱
+> 一个使用Qt&C++编写的ADB工具箱，适用于华为儿童手表的ADB工具箱
 
 `本人不是专业开发人员，代码写的不好，别喷，球球力(悲)`
 
-签testkey的命令来自于[@Mxzsan](https://space.bilibili.com/2076292953)
+签Testkey的命令来自于[@Mxzsan](https://space.bilibili.com/2076292953)
 
 本软件完全开源免费，如你是收费获取的那么即为上当受骗
 
